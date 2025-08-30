@@ -1,0 +1,61 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    './app/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './pages/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: 'hsl(214 32% 98%)',
+        foreground: 'hsl(222 47% 11%)',
+        card: 'hsl(0 0% 100%)',
+        'card-foreground': 'hsl(222 47% 11%)',
+        popover: 'hsl(0 0% 100%)',
+        'popover-foreground': 'hsl(222 47% 11%)',
+        primary: 'hsl(217 91% 60%)',
+        'primary-foreground': 'hsl(0 0% 100%)',
+        'primary-hover': 'hsl(217 91% 55%)',
+        'primary-light': 'hsl(217 91% 95%)',
+        secondary: 'hsl(220 14% 96%)',
+        'secondary-foreground': 'hsl(220 9% 46%)',
+        muted: 'hsl(220 14% 96%)',
+        'muted-foreground': 'hsl(220 9% 46%)',
+        accent: 'hsl(217 91% 60%)',
+        'accent-foreground': 'hsl(0 0% 100%)',
+        success: 'hsl(142 76% 36%)',
+        'success-foreground': 'hsl(0 0% 100%)',
+        'success-light': 'hsl(142 76% 95%)',
+        warning: 'hsl(45 93% 47%)',
+        'warning-foreground': 'hsl(0 0% 100%)',
+        'warning-light': 'hsl(45 93% 95%)',
+        destructive: 'hsl(0 84% 60%)',
+        'destructive-foreground': 'hsl(0 0% 100%)',
+        'destructive-light': 'hsl(0 84% 95%)',
+        info: 'hsl(199 89% 48%)',
+        'info-foreground': 'hsl(0 0% 100%)',
+        'info-light': 'hsl(199 89% 95%)',
+        border: 'hsl(220 13% 91%)',
+        input: 'hsl(220 13% 91%)',
+        ring: 'hsl(217 91% 60%)',
+        'sidebar-background': 'hsl(222 47% 11%)',
+        'sidebar-foreground': 'hsl(210 40% 98%)',
+        'sidebar-primary': 'hsl(217 91% 60%)',
+        'sidebar-primary-foreground': 'hsl(0 0% 100%)',
+        'sidebar-accent': 'hsl(217 33% 17%)',
+        'sidebar-accent-foreground': 'hsl(210 40% 98%)',
+        'sidebar-border': 'hsl(217 33% 17%)',
+        'sidebar-ring': 'hsl(217 91% 60%)',
+      },
+      borderRadius: {
+        DEFAULT: '0.375rem',
+      },
+    },
+  },
+  darkMode: 'class',
+};
+
+export default config;
