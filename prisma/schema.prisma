@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model entrada_estoque {
+  id            Int       @id @default(autoincrement())
+  produto_id    Int?
+  quantidade    Int
+  fornecedor_id Int?
+  data_entrada  DateTime? @default(now()) @db.Timestamp(6)
+  tipo_entrada  Int?
+  loja_id       Int?
+  produtos      produtos? @relation(fields: [produto_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model lojas {
+  id             Int     @id @default(autoincrement())
+  nome           String? @db.VarChar(80)
+  endereco       String?
+  gerente        Int?
+  qtd_total_prod Int?
+  estoque_por_loja estoque_loja[]
+}
+
+model produtos {
+  id                    Int               @id @default(autoincrement())
+  codigo                String            @unique @db.VarChar(60)
+  descricao             String?
+  fornecedor            String?           @db.VarChar(80)
+  preco_venda           Decimal           @db.Decimal(18, 2)
+  quantidade_mostruario Int?              @default(0)
+  quantidade_estoque    Int?              @default(0)
+  quantidade_disponivel Int?              @default(0)
+  entrada_estoque       entrada_estoque[]
+  estoque_por_loja      estoque_loja[]
+}
+
+model setor {
+  id        Int     @id @default(autoincrement())
+  descricao String? @db.VarChar(60)
+}
+
+model tipo_movimento {
+  chave     Int     @id @default(autoincrement())
+  descricao String?
+}
+
+model estoque_loja {
+  id                     Int       @id @default(autoincrement())
+  produto_id             Int
+  loja_id                Int
+  quantidade_estoque     Int       @default(0)
+  quantidade_mostruario  Int       @default(0)
+  quantidade_disponivel  Int       @default(0)
+
+  produto                produtos  @relation(fields: [produto_id], references: [id])
+  loja_ref               lojas     @relation(fields: [loja_id], references: [id])
+
+  @@unique([produto_id, loja_id])
+}
+
+model usuarios {
+  id      Int      @id @default(autoincrement())
+  nome    String?  @db.VarChar(50)
+  login   String?  @db.VarChar(40)
+  senha   Int?
+  setor   Int?
+  loja    Int?
+  inativo Boolean? @default(false)
+  email   String?
+}
