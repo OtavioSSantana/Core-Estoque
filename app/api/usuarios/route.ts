@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { getLojas } from '../../dashboard/lojas/_data-access/get-lojas';
-import { createLoja, validateCreateLojaData } from '../../dashboard/lojas/_data-access/create-lojas';
+import { getUsuarios } from '../../dashboard/usuarios/_data_access/get-usuarios';
+import { createUsuario, validateCreateUsuarioData } from '../../dashboard/usuarios/_data_access/create-usuarios';
 
 export async function GET(request: NextRequest) {
-  return await getLojas();
+  return await getUsuarios();
 }
 
 export async function POST(request: NextRequest) {
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Valida os dados
-    const errors = validateCreateLojaData(body);
+    const errors = validateCreateUsuarioData(body);
     if (errors.length > 0) {
       return Response.json(
         { message: "Dados inválidos", errors },
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return await createLoja(body);
+    return await createUsuario(body);
   } catch (error) {
     console.error('Erro ao processar requisição POST:', error);
     return Response.json(

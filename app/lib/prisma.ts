@@ -1,6 +1,6 @@
 // lib/prisma.ts
 
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '../generated/prisma/index.js';
 
 // Declaração global para o Prisma
 declare global {

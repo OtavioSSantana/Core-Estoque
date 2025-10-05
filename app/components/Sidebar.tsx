@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -23,21 +24,26 @@ const navigation = [
   { name: 'Configurações', href: '/dashboard/configuracoes', icon: Settings, adminOnly: false },
 ];
 
-// Static user data
-const user = {
-  name: 'Ana Silva',
-  role: 'admin',
-  avatar: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2MzY2ZjEiLz4KPHRleHQgeD0iMjAiIHk9IjI2IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BUzwvdGV4dD4KPC9zdmc+'
-};
-
 export default function Sidebar() {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
+  const { data: session } = useSession();
 
-  const handleLogout = () => {
-    // Simple logout - could redirect to login page
-    console.log('Logout clicked');
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
   };
+
+  // Gerar avatar baseado nas iniciais do nome
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const userInitials = session?.user?.name ? getInitials(session.user.name) : 'U';
 
   return (
     <div 
@@ -95,17 +101,19 @@ export default function Sidebar() {
           'flex items-center gap-3',
           !expanded && 'justify-center'
         )}>
-          <img
-            src={user.avatar}
-            alt={user.name}
-            className="w-10 h-10 rounded-full flex-shrink-0"
-          />
+          <div className="w-10 h-10 rounded-full bg-sidebar-primary flex items-center justify-center flex-shrink-0">
+            <span className="text-sidebar-primary-foreground font-medium text-sm">
+              {userInitials}
+            </span>
+          </div>
           {expanded && (
             <>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.name}</p>
+                <p className="text-sm font-medium truncate">
+                  {session?.user?.name || 'Usuário'}
+                </p>
                 <p className="text-xs text-sidebar-foreground/60 truncate">
-                  {user.role === 'admin' ? 'Administrador' : 'Gerente'}
+                  {session?.user?.login || 'Login'}
                 </p>
               </div>
               <button
