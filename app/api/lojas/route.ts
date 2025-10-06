@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { getLojas } from '../../dashboard/lojas/_data-access/get-lojas';
 import { createLoja, validateCreateLojaData } from '../../dashboard/lojas/_data-access/create-lojas';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   return await getLojas();
 }
 
