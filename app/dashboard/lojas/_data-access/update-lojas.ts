@@ -69,7 +69,11 @@ export async function updateLoja(id: number, data: UpdateLojaData) {
     }
 
     // Prepara os dados para atualização
-    const dadosAtualizacao: any = {};
+    const dadosAtualizacao: Partial<{
+      nome: string;
+      endereco: string | null;
+      gerente: number | null;
+    }> = {};
     
     if (data.nome !== undefined) {
       dadosAtualizacao.nome = data.nome.trim();

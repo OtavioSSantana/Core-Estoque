@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { getUsuarios } from '../../dashboard/usuarios/_data_access/get-usuarios';
 import { createUsuario, validateCreateUsuarioData } from '../../dashboard/usuarios/_data_access/create-usuarios';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   return await getUsuarios();
 }
 

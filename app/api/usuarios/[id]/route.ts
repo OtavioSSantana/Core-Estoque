@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getUsuarioById } from '../../../dashboard/usuarios/_data_access/get-usuarios';
 import { updateUsuario, validateUpdateUsuarioData } from '../../../dashboard/usuarios/_data_access/update-usuarios';
-import { deleteUsuario, validateUsuarioId, deactivateUsuario, activateUsuario } from '../../../dashboard/usuarios/_data_access/delete-usuarios';
+import { deleteUsuario, validateUsuarioId } from '../../../dashboard/usuarios/_data_access/delete-usuarios';
 
 export async function GET(
   request: NextRequest,

@@ -9,7 +9,7 @@ import { deleteProduct } from '../../dashboard/produtos/_data_access/delete-prod
 /**
  * Função para lidar com requisições GET (buscar produtos)
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   return await getProducts();
 }
 

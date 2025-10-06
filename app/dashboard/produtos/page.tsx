@@ -66,8 +66,8 @@ export default function ProdutosPage() {
         }
         const data = await res.json();
         setProdutos(data);
-      } catch (e: any) {
-        setErro(e.message || 'Erro desconhecido');
+      } catch (e: unknown) {
+        setErro(e instanceof Error ? e.message : 'Erro desconhecido');
       } finally {
         setLoading(false);
       }
@@ -129,8 +129,8 @@ export default function ProdutosPage() {
       // Mostra mensagem de sucesso (opcional)
       alert('Produto adicionado com sucesso!');
 
-    } catch (error: any) {
-      setErro(error.message || 'Erro ao adicionar produto');
+    } catch (error: unknown) {
+      setErro(error instanceof Error ? error.message : 'Erro ao adicionar produto');
     } finally {
       setIsSubmitting(false);
     }
@@ -190,8 +190,8 @@ export default function ProdutosPage() {
       // Mostra mensagem de sucesso
       alert('Produto atualizado com sucesso!');
 
-    } catch (error: any) {
-      setErro(error.message || 'Erro ao atualizar produto');
+    } catch (error: unknown) {
+      setErro(error instanceof Error ? error.message : 'Erro ao atualizar produto');
     } finally {
       setIsSubmitting(false);
     }
@@ -240,8 +240,8 @@ export default function ProdutosPage() {
       // Mostra mensagem de sucesso
       alert('Produto deletado com sucesso!');
 
-    } catch (error: any) {
-      setErro(error.message || 'Erro ao deletar produto');
+    } catch (error: unknown) {
+      setErro(error instanceof Error ? error.message : 'Erro ao deletar produto');
     } finally {
       setIsSubmitting(false);
     }

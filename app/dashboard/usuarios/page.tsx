@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -21,7 +21,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { UserPlus, Edit, Power, KeyRound, Trash2, RefreshCw } from 'lucide-react';
+import { UserPlus, Edit, Power, Trash2, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
@@ -71,9 +71,9 @@ export default function Usuarios() {
     loadUsuarios();
     loadLojas();
     loadSetores();
-  }, []);
+  }, [loadUsuarios]);
 
-  const loadUsuarios = async () => {
+  const loadUsuarios = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/usuarios');
@@ -97,7 +97,7 @@ export default function Usuarios() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   const loadLojas = async () => {
     try {

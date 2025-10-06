@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -39,7 +39,7 @@ export default function Lojas() {
   const { toast } = useToast();
 
   // Carrega as lojas do banco de dados
-  const fetchLojas = async () => {
+  const fetchLojas = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/lojas');
@@ -63,12 +63,12 @@ export default function Lojas() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   // Carrega as lojas quando o componente monta
   useEffect(() => {
     fetchLojas();
-  }, []);
+  }, [fetchLojas]);
 
   // Função para criar nova loja
   const handleCreateLoja = async () => {

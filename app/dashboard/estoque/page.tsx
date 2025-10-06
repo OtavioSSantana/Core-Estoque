@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -46,7 +46,7 @@ export default function Estoque() {
   const { toast } = useToast();
   
   const [stockItems, setStockItems] = useState<EstoqueItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStore, setSelectedStore] = useState('all');
@@ -65,7 +65,7 @@ export default function Estoque() {
   const [selectedLojaMovimento, setSelectedLojaMovimento] = useState<string>('');
 
   // Fetch stock data using the API route
-  const fetchStockData = async () => {
+  const fetchStockData = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -106,7 +106,7 @@ export default function Estoque() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageNumber, pageSize, selectedStatus, selectedStore, searchTerm, toast]);
 
   useEffect(() => {
     fetchStockData();

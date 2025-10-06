@@ -87,7 +87,15 @@ export async function updateUsuario(id: number, data: UpdateUsuarioData) {
     }
 
     // Prepara os dados para atualização
-    const dadosAtualizacao: any = {};
+    const dadosAtualizacao: Partial<{
+      nome: string;
+      login: string;
+      senha: number;
+      setor: number;
+      loja: number;
+      email: string | null;
+      inativo: boolean;
+    }> = {};
 
     if (data.nome !== undefined) {
       dadosAtualizacao.nome = data.nome.trim();
