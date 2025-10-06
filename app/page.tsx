@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn, getSession, useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +40,7 @@ export default function Home() {
       } else if (result?.ok) {
         router.push('/dashboard');
       }
-    } catch (error) {
+    } catch {
       setError('Erro interno do servidor');
     } finally {
       setLoading(false);
