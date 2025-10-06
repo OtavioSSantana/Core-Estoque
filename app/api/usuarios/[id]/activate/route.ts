@@ -3,10 +3,11 @@ import { activateUsuario, validateUsuarioId } from '../../../../dashboard/usuari
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
     
     // Valida o ID
     const errors = validateUsuarioId(id);
