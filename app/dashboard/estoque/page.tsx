@@ -23,14 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Filter, Package } from 'lucide-react';
-import { Move, PackagePlus, PackageMinus, PackageCheck, PackageX } from 'lucide-react';
+import { Search, Package } from 'lucide-react';
 import { 
-  EstoqueItem,
-  getEstoque,
-  getEstoqueBaixo,
-  getMovimentacoesEstoque,
-  getResumoEstoque
+  EstoqueItem
 } from './_data_access/get-estoque';
 import { registrarSaidaEstoque, transferirEstoque } from './_data_access/saida-estoque';
 import { updateEstoque } from './_data_access/update-estoque';
@@ -42,31 +37,9 @@ const useAuth = () => ({
   isAdmin: true
 });
 
-// Paliativo: Componente StatusBadge inline
-const StatusBadge = ({ status }: { status: 'baixo' | 'normal' | 'alto' }) => {
-  const statusConfig = {
-    baixo: { label: 'Estoque Baixo', className: 'bg-red-100 text-red-800' },
-    normal: { label: 'Em Estoque', className: 'bg-green-100 text-green-800' },
-    alto: { label: 'Estoque Alto', className: 'bg-blue-100 text-blue-800' },
-  };
-  
-  const config = statusConfig[status] || statusConfig.normal;
-  
-  return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.className}`}>
-      {config.label}
-    </span>
-  );
-};
+// Paliativo: Componente StatusBadge inline (removido - não usado)
 
-// Paliativo: Imagens placeholder
-const mattressImages: Record<string, string> = {
-  'prod1': 'https://via.placeholder.com/150x150/e5e7eb/6b7280?text=Colchão+1',
-  'prod2': 'https://via.placeholder.com/150x150/e5e7eb/6b7280?text=Colchão+2',
-  'prod3': 'https://via.placeholder.com/150x150/e5e7eb/6b7280?text=Colchão+3',
-  'prod4': 'https://via.placeholder.com/150x150/e5e7eb/6b7280?text=Colchão+4',
-  'prod5': 'https://via.placeholder.com/150x150/e5e7eb/6b7280?text=Colchão+5'
-};
+// Paliativo: Imagens placeholder (removido - não usado)
 
 export default function Estoque() {
   const { user, isAdmin } = useAuth();
@@ -80,7 +53,7 @@ export default function Estoque() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [stores, setStores] = useState<{id: string; nome: string}[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [moveSelectedStore, setMoveSelectedStore] = useState('');
@@ -137,7 +110,7 @@ export default function Estoque() {
 
   useEffect(() => {
     fetchStockData();
-  }, [isAdmin, pageNumber, pageSize, selectedStatus, selectedStore]);
+  }, [isAdmin, pageNumber, pageSize, selectedStatus, selectedStore, fetchStockData]);
 
   useEffect(() => {
     // Carrega lojas da API dedicada
@@ -146,9 +119,9 @@ export default function Estoque() {
         const resp = await fetch('/api/lojas');
         if (resp.ok) {
           const lojas = await resp.json();
-          setStores(lojas.map((l: any) => ({ id: String(l.id), nome: l.nome || `Loja ${l.id}` })));
+          setStores(lojas.map((l: { id: number; nome: string | null }) => ({ id: String(l.id), nome: l.nome || `Loja ${l.id}` })));
         }
-      } catch (e) {
+      } catch {
         // fallback silencioso
       }
     })();
@@ -160,13 +133,14 @@ export default function Estoque() {
           const tipos = await resp.json();
           setTiposMovimento(Array.isArray(tipos) ? tipos : []);
         }
-      } catch (e) {
+      } catch {
         // silencioso
       }
     })();
   }, []);
 
-  // Handle selling an item using registrarSaidaEstoque
+  // Handle selling an item using registrarSaidaEstoque (removido - não usado)
+  /*
   const handleSellItem = async (item: EstoqueItem) => {
     try {
       const result = await registrarSaidaEstoque({
@@ -194,8 +168,10 @@ export default function Estoque() {
       });
     }
   };
+  */
 
-  // Handle moving an item using updateEstoque
+  // Handle moving an item using updateEstoque (removido - não usado)
+  /*
   const handleMoveItem = async (itemId: number, newStoreId: string) => {
     try {
       const updatedItem = await updateEstoque({
@@ -220,8 +196,10 @@ export default function Estoque() {
       });
     }
   };
+  */
 
-  // Handle deleting an item
+  // Handle deleting an item (removido - não usado)
+  /*
   const handleDeleteItem = async (itemId: number) => {
     if (!confirm('Tem certeza que deseja remover este item do estoque?')) return;
     
@@ -251,6 +229,7 @@ export default function Estoque() {
       });
     }
   };
+  */
 
   // Filtrar itens baseado nas permissões e filtros
   const filteredItems = stockItems.filter(item => {
@@ -354,9 +333,9 @@ export default function Estoque() {
             produto_id: item.id,
             tipo_movimentacao: 'transfer_between_stores',
             quantidade: qtd,
-            loja_origem: item.loja_id || 1, // fallback para loja 1 se não definida
+            loja_origem: Number(item.loja_id) || 1, // fallback para loja 1 se não definida
             loja_destino: lojaDestino,
-          } as any))
+          }))
         );
       } else {
         const tipoChave = parseInt(selectedTipoMovimento || '0');
@@ -407,7 +386,7 @@ export default function Estoque() {
               quantidade: qtd, 
               tipo_transferencia: 'estoque_para_mostruario',
               loja_id: parseInt(selectedLojaMovimento)
-            } as any);
+            });
           }
           if (tipoChave === 4) {
             // Retornar do Mostruário
@@ -416,7 +395,7 @@ export default function Estoque() {
               quantidade: qtd, 
               tipo_transferencia: 'mostruario_para_estoque',
               loja_id: parseInt(selectedLojaMovimento)
-            } as any);
+            });
           }
 
           throw new Error('Tipo de movimento não suportado');
@@ -728,7 +707,7 @@ export default function Estoque() {
                 {selectedTipoMovimento === '7' && (
                   <div>
                     <Label>Direção do Ajuste</Label>
-                    <Select value={ajusteDirecao} onValueChange={(v) => setAjusteDirecao(v as any)}>
+                    <Select value={ajusteDirecao} onValueChange={(v) => setAjusteDirecao(v as 'positivo' | 'negativo')}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecionar" />
                       </SelectTrigger>

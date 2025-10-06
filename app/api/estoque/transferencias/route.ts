@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
 
     // Busca saldos por loja - se não existir, cria com estoque do produto
     let saldoOrigem = await prisma.estoque_loja.findUnique({
-      where: { produto_id_loja_id: { produto_id: produtoId, loja_id: origemId } as any },
-    } as any);
+      where: { produto_id_loja_id: { produto_id: produtoId, loja_id: origemId } },
+    });
 
     // Se não existe estoque na loja de origem, cria com o estoque atual do produto
     if (!saldoOrigem) {
@@ -92,16 +92,16 @@ export async function POST(request: NextRequest) {
     const resultado = await prisma.$transaction(async (tx) => {
       // 1) Atualiza estoque_loja origem (decrementa)
       await tx.estoque_loja.update({
-        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: origemId } as any },
+        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: origemId } },
         data: {
           quantidade_estoque: { decrement: qtd },
           quantidade_disponivel: { decrement: qtd },
         },
-      } as any);
+      });
 
       // 2) Atualiza/Insera estoque_loja destino (incrementa)
       const destinoAtualizado = await tx.estoque_loja.upsert({
-        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: destinoId } as any },
+        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: destinoId } },
         update: {
           quantidade_estoque: { increment: qtd },
           quantidade_disponivel: { increment: qtd },
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
           quantidade_disponivel: qtd,
           quantidade_mostruario: 0,
         },
-      } as any);
+      });
 
       // 3) Registra histórico na entrada_estoque (saída na origem, entrada no destino), tipo 3 = transferência
       await tx.entrada_estoque.create({

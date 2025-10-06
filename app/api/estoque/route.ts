@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(url.searchParams.get('page') || '1');
     const pageSize = parseInt(url.searchParams.get('pageSize') || '10');
     const search = url.searchParams.get('search')?.trim() || '';
-    const status = url.searchParams.get('status'); // 'baixo' | 'normal' | 'alto'
+    // const status = url.searchParams.get('status'); // 'baixo' | 'normal' | 'alto' - removido pois não é usado
     const lojaId = url.searchParams.get('lojaId');
 
     switch (tipo) {
@@ -39,7 +39,13 @@ export async function GET(request: NextRequest) {
         }
 
         // Busca produtos com estoque_loja (LEFT JOIN)
-        const whereProdutos: any = {};
+        const whereProdutos: {
+          OR?: Array<{
+            codigo?: { contains: string; mode: 'insensitive' };
+            descricao?: { contains: string; mode: 'insensitive' };
+            fornecedor?: { contains: string; mode: 'insensitive' };
+          }>;
+        } = {};
         if (search) {
           whereProdutos.OR = [
             { codigo: { contains: search, mode: 'insensitive' } },
@@ -67,13 +73,25 @@ export async function GET(request: NextRequest) {
         const total = await prisma.produtos.count({ where: whereProdutos });
 
         // Expande produtos com estoque_loja
-        let itensCalculados: any[] = [];
+        const itensCalculados: Array<{
+          id: number;
+          codigo: string;
+          descricao: string | null;
+          fornecedor: string | null;
+          quantidade_estoque: number | null;
+          quantidade_mostruario: number | null;
+          quantidade_disponivel: number | null;
+          preco_venda: string;
+          total_valor_estoque: number;
+          loja_id: number | null;
+          loja: { id: number; nome: string | null } | null;
+          data_entrada: null;
+        }> = [];
         
         produtos.forEach(produto => {
           if (produto.estoque_por_loja && produto.estoque_por_loja.length > 0) {
             // Produto tem estoque em lojas específicas
             produto.estoque_por_loja.forEach(estoque => {
-              const quantidadeEstoque = estoque.quantidade_estoque ?? 0;
               itensCalculados.push({
                 id: produto.id,
                 codigo: produto.codigo,
@@ -91,7 +109,6 @@ export async function GET(request: NextRequest) {
             });
           } else {
             // Produto não tem estoque_loja - mostra com loja null
-            const quantidadeEstoque = produto.quantidade_estoque ?? 0;
             itensCalculados.push({
               id: produto.id,
               codigo: produto.codigo,
@@ -172,7 +189,11 @@ export async function PUT(request: NextRequest) {
     }
 
     // Prepara os dados para atualização
-    const updateData: any = {};
+    const updateData: {
+      quantidade_estoque?: number;
+      quantidade_mostruario?: number;
+      quantidade_disponivel?: number;
+    } = {};
 
     if (data.quantidade_estoque !== undefined) {
       const novaQuantidadeEstoque = parseInt(data.quantidade_estoque.toString());

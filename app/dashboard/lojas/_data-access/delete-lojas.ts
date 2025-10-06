@@ -105,7 +105,7 @@ export async function canDeleteLoja(id: number): Promise<boolean> {
  * @param id - ID a ser validado
  * @returns string[] - Array de erros encontrados
  */
-export function validateLojaId(id: any): string[] {
+export function validateLojaId(id: string | number): string[] {
   const errors: string[] = [];
 
   if (!id) {

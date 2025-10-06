@@ -125,7 +125,7 @@ export async function createMovimentacao(data: CreateMovimentacaoData) {
     // Atualiza/insere saldo por loja
     if (lojaIdToApply !== null) {
       await prisma.estoque_loja.upsert({
-        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaIdToApply } as any },
+        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaIdToApply } },
         update: {
           quantidade_estoque: { increment: quantidadeMov },
           quantidade_disponivel: { increment: quantidadeMov },
@@ -137,7 +137,7 @@ export async function createMovimentacao(data: CreateMovimentacaoData) {
           quantidade_disponivel: quantidadeMov,
           quantidade_mostruario: 0,
         },
-      } as any);
+      });
     }
 
     // Retorna a movimentação criada junto com os dados do produto atualizado

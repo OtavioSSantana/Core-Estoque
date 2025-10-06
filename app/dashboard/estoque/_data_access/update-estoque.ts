@@ -1,7 +1,7 @@
 // app/dashboard/estoque/_data_access/update-estoque.ts
 
-import prisma from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+// import prisma from '@/lib/prisma';
+// import { NextResponse } from 'next/server';
 
 /**
  * Interface para dados de atualização de estoque
@@ -110,7 +110,7 @@ export async function updateEstoque(data: UpdateEstoqueData) {
       if (origem == null || destino == null) {
         throw new Error('Informe loja_origem e loja_destino');
       }
-      if (parseInt(origem as any) === parseInt(destino as any)) {
+      if (parseInt(origem.toString()) === parseInt(destino.toString())) {
         throw new Error('loja_origem e loja_destino devem ser diferentes');
       }
       const resp = await fetch('/api/estoque/transferencias', {

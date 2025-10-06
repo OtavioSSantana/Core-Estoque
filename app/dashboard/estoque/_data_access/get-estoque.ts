@@ -68,7 +68,20 @@ export async function getEstoque() {
     });
 
     // Expande produtos com estoque_loja: se não tem estoque_loja, mostra com loja null
-    const estoqueComCalculos: any[] = [];
+    const estoqueComCalculos: Array<{
+      id: number;
+      codigo: string;
+      descricao: string;
+      fornecedor: string;
+      quantidade_estoque: number;
+      quantidade_mostruario: number;
+      quantidade_disponivel: number;
+      preco_venda: string;
+      total_valor_estoque: number;
+      loja_id: number | null;
+      loja: { id: number; nome: string | null } | null;
+      data_entrada: undefined;
+    }> = [];
     
     produtos.forEach(produto => {
       if (produto.estoque_por_loja && produto.estoque_por_loja.length > 0) {
