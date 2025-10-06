@@ -47,9 +47,9 @@ export const authOptions: NextAuthOptions = {
             id: usuario.id.toString(),
             name: usuario.nome,
             email: usuario.email,
-            login: usuario.login,
-            setor: usuario.setor,
-            loja: usuario.loja
+            login: usuario.login || undefined,
+            setor: usuario.setor || undefined,
+            loja: usuario.loja || undefined
           };
         } catch (error) {
           console.error('Erro na autenticação:', error);
