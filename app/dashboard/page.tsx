@@ -1,5 +1,34 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function Dashboard() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redireciona automaticamente para a página de estoque
+    router.push('/dashboard/estoque');
+  }, [router]);
+
+  return (
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Redirecionando...</h1>
+          <p className="text-muted-foreground">
+            Você será redirecionado para a página de estoque em instantes.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 
+// PÁGINA DE DASHBOARD COMENTADA
+// Esta página foi desabilitada e redireciona para /dashboard/estoque
+
 import { StatCard } from '@/components/StatCard';
 import { StatusBadge } from '@/components/StatusBadge';
 import {
@@ -65,7 +94,7 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
+      // Header
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
@@ -94,7 +123,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Cards */}
+      // Stats Cards
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Valor do Estoque"
@@ -128,7 +157,7 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Charts Placeholder */}
+      // Charts Placeholder
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card p-6 rounded-lg border border-border">
           <h3 className="text-lg font-semibold mb-4">Distribuição de Estoque por Loja</h3>
@@ -153,9 +182,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Tables */}
+      // Tables
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Últimas Movimentações */}
+        // Últimas Movimentações
         <div className="bg-card rounded-lg border border-border">
           <div className="p-6 border-b border-border">
             <h3 className="text-lg font-semibold">Últimas Movimentações</h3>
@@ -198,7 +227,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Produtos com Estoque Baixo */}
+        // Produtos com Estoque Baixo
         <div className="bg-card rounded-lg border border-border">
           <div className="p-6 border-b border-border">
             <h3 className="text-lg font-semibold">Produtos com Estoque Baixo</h3>
@@ -238,3 +267,4 @@ export default function Dashboard() {
     </div>
   );
 }
+*/

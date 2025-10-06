@@ -127,8 +127,16 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error("Erro ao processar requisição GET de estoque:", error);
+    console.error("Detalhes do erro:", {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return Response.json(
-      { message: "Erro interno do servidor ao processar requisição." },
+      { 
+        message: "Erro interno do servidor ao processar requisição.",
+        error: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }

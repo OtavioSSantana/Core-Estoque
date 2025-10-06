@@ -105,7 +105,13 @@ export default function Estoque() {
       const response = await fetch(`/api/estoque?${params.toString()}`);
       
       if (!response.ok) {
-        throw new Error('Erro ao carregar estoque');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Erro na API de estoque:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData
+        });
+        throw new Error(errorData.message || `Erro ao carregar estoque (${response.status})`);
       }
       
       const data = await response.json();
@@ -742,7 +748,7 @@ export default function Estoque() {
               </h4>
               <ul className="space-y-2 max-h-40 overflow-y-auto">
                 {itemsToMove.map(item => (
-                  <li key={item.id} className="text-sm flex justify-between">
+                  <li key={`${item.id}-${item.loja_id ?? 'global'}`} className="text-sm flex justify-between">
                     <span>• {item.produto?.nome || item.descricao}</span>
                     <span className="text-muted-foreground ml-4">
                       Estoque: {item.quantidade_estoque} | Mostruário: {item.quantidade_mostruario}
