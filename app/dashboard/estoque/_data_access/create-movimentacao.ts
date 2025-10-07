@@ -110,25 +110,32 @@ export async function createMovimentacao(data: CreateMovimentacaoData) {
     });
 
     // Atualiza a quantidade em estoque do produto
+    const estoqueAtual = produtoExistente.quantidade_estoque || 0;
+    const disponivelAtual = produtoExistente.quantidade_disponivel || 0;
+    
     const produtoAtualizado = await prisma.produtos.update({
       where: { id: produtoId },
       data: {
-        quantidade_estoque: {
-          increment: quantidadeMov
-        },
-        quantidade_disponivel: {
-          increment: quantidadeMov
-        }
+        quantidade_estoque: estoqueAtual + quantidadeMov,
+        quantidade_disponivel: disponivelAtual + quantidadeMov
       }
     });
 
     // Atualiza/insere saldo por loja
     if (lojaIdToApply !== null) {
+      // Buscar estoque atual da loja
+      const estoqueLojaAtual = await prisma.estoque_loja.findUnique({
+        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaIdToApply } }
+      });
+      
+      const estoqueLojaAtualQtd = estoqueLojaAtual?.quantidade_estoque || 0;
+      const disponivelLojaAtual = estoqueLojaAtual?.quantidade_disponivel || 0;
+      
       await prisma.estoque_loja.upsert({
         where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaIdToApply } },
         update: {
-          quantidade_estoque: { increment: quantidadeMov },
-          quantidade_disponivel: { increment: quantidadeMov },
+          quantidade_estoque: estoqueLojaAtualQtd + quantidadeMov,
+          quantidade_disponivel: disponivelLojaAtual + quantidadeMov,
         },
         create: {
           produto_id: produtoId,

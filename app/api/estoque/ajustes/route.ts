@@ -54,11 +54,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const estoqueAtual = produto.quantidade_estoque || 0;
+    const disponivelAtual = produto.quantidade_disponivel || 0;
+    
     const produtoAtualizado = await prisma.produtos.update({
       where: { id: produtoId },
       data: {
-        quantidade_estoque: { [isEntrada ? 'increment' : 'decrement']: quantidade },
-        quantidade_disponivel: { [isEntrada ? 'increment' : 'decrement']: quantidade },
+        quantidade_estoque: isEntrada ? estoqueAtual + quantidade : estoqueAtual - quantidade,
+        quantidade_disponivel: isEntrada ? disponivelAtual + quantidade : disponivelAtual - quantidade,
       },
     });
 

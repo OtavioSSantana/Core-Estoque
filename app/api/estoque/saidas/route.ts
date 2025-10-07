@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
       const mostruarioAtual = produtoExistente.quantidade_mostruario || 0;
 
       let updateData: {
-        quantidade_mostruario?: { decrement: number };
-        quantidade_estoque?: { increment: number };
+        quantidade_mostruario?: number;
+        quantidade_estoque?: number;
       } = {};
       if (tipo_transferencia === 'mostruario_para_estoque') {
         if (mostruarioAtual < quantidadeTransferencia) {
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
           );
         }
         updateData = {
-          quantidade_mostruario: { decrement: quantidadeTransferencia },
-          quantidade_estoque: { increment: quantidadeTransferencia },
+          quantidade_mostruario: mostruarioAtual - quantidadeTransferencia,
+          quantidade_estoque: estoqueAtual + quantidadeTransferencia,
         };
       } else {
         if (estoqueAtual < quantidadeTransferencia) {
@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
           );
         }
         updateData = {
-          quantidade_estoque: { decrement: quantidadeTransferencia },
-          quantidade_mostruario: { increment: quantidadeTransferencia },
+          quantidade_estoque: estoqueAtual - quantidadeTransferencia,
+          quantidade_mostruario: mostruarioAtual + quantidadeTransferencia,
         };
       }
 
@@ -75,11 +75,19 @@ export async function POST(request: NextRequest) {
         const lojaParsed = parseInt(loja_id.toString());
         if (!isNaN(lojaParsed)) {
           if (tipo_transferencia === 'mostruario_para_estoque') {
+            // Buscar estoque atual da loja
+            const estoqueLojaAtual = await prisma.estoque_loja.findUnique({
+              where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaParsed } }
+            });
+            
+            const mostruarioLojaAtual = estoqueLojaAtual?.quantidade_mostruario || 0;
+            const estoqueLojaAtualQtd = estoqueLojaAtual?.quantidade_estoque || 0;
+            
             await prisma.estoque_loja.upsert({
               where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaParsed } },
               update: {
-                quantidade_mostruario: { decrement: quantidadeTransferencia },
-                quantidade_estoque: { increment: quantidadeTransferencia },
+                quantidade_mostruario: mostruarioLojaAtual - quantidadeTransferencia,
+                quantidade_estoque: estoqueLojaAtualQtd + quantidadeTransferencia,
               },
               create: {
                 produto_id: produtoId,
@@ -90,12 +98,21 @@ export async function POST(request: NextRequest) {
               },
             });
           } else {
+            // Buscar estoque atual da loja
+            const estoqueLojaAtual = await prisma.estoque_loja.findUnique({
+              where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaParsed } }
+            });
+            
+            const estoqueLojaAtualQtd = estoqueLojaAtual?.quantidade_estoque || 0;
+            const mostruarioLojaAtual = estoqueLojaAtual?.quantidade_mostruario || 0;
+            const disponivelLojaAtual = estoqueLojaAtual?.quantidade_disponivel || 0;
+            
             await prisma.estoque_loja.upsert({
               where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaParsed } },
               update: {
-                quantidade_estoque: { decrement: quantidadeTransferencia },
-                quantidade_mostruario: { increment: quantidadeTransferencia },
-                quantidade_disponivel: { decrement: quantidadeTransferencia },
+                quantidade_estoque: estoqueLojaAtualQtd - quantidadeTransferencia,
+                quantidade_mostruario: mostruarioLojaAtual + quantidadeTransferencia,
+                quantidade_disponivel: disponivelLojaAtual - quantidadeTransferencia,
               },
               create: {
                 produto_id: produtoId,
@@ -153,8 +170,8 @@ export async function POST(request: NextRequest) {
     const produtoAtualizado = await prisma.produtos.update({
       where: { id: produtoId },
       data: {
-        quantidade_estoque: { decrement: quantidadeSaida },
-        quantidade_disponivel: { decrement: quantidadeSaida },
+        quantidade_estoque: estoqueAtual - quantidadeSaida,
+        quantidade_disponivel: disponivelAtual - quantidadeSaida,
       },
     });
 
@@ -172,11 +189,19 @@ export async function POST(request: NextRequest) {
     if (loja_id) {
       const lojaParsed = parseInt(loja_id.toString());
       if (!isNaN(lojaParsed)) {
+        // Buscar estoque atual da loja
+        const estoqueLojaAtual = await prisma.estoque_loja.findUnique({
+          where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaParsed } }
+        });
+        
+        const estoqueLojaAtualQtd = estoqueLojaAtual?.quantidade_estoque || 0;
+        const disponivelLojaAtual = estoqueLojaAtual?.quantidade_disponivel || 0;
+        
         await prisma.estoque_loja.upsert({
           where: { produto_id_loja_id: { produto_id: produtoId, loja_id: lojaParsed } },
           update: {
-            quantidade_estoque: { decrement: quantidadeSaida },
-            quantidade_disponivel: { decrement: quantidadeSaida },
+            quantidade_estoque: estoqueLojaAtualQtd - quantidadeSaida,
+            quantidade_disponivel: disponivelLojaAtual - quantidadeSaida,
           },
           create: {
             produto_id: produtoId,

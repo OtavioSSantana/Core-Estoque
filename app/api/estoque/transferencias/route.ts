@@ -94,17 +94,24 @@ export async function POST(request: NextRequest) {
       await tx.estoque_loja.update({
         where: { produto_id_loja_id: { produto_id: produtoId, loja_id: origemId } },
         data: {
-          quantidade_estoque: { decrement: qtd },
-          quantidade_disponivel: { decrement: qtd },
+          quantidade_estoque: estoqueOrigem - qtd,
+          quantidade_disponivel: disponivelOrigem - qtd,
         },
       });
 
       // 2) Atualiza/Insera estoque_loja destino (incrementa)
+      const estoqueDestinoAtual = await tx.estoque_loja.findUnique({
+        where: { produto_id_loja_id: { produto_id: produtoId, loja_id: destinoId } }
+      });
+      
+      const estoqueDestinoQtd = estoqueDestinoAtual?.quantidade_estoque || 0;
+      const disponivelDestinoQtd = estoqueDestinoAtual?.quantidade_disponivel || 0;
+      
       const destinoAtualizado = await tx.estoque_loja.upsert({
         where: { produto_id_loja_id: { produto_id: produtoId, loja_id: destinoId } },
         update: {
-          quantidade_estoque: { increment: qtd },
-          quantidade_disponivel: { increment: qtd },
+          quantidade_estoque: estoqueDestinoQtd + qtd,
+          quantidade_disponivel: disponivelDestinoQtd + qtd,
         },
         create: {
           produto_id: produtoId,
