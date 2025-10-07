@@ -66,13 +66,6 @@ export default function Usuarios() {
   });
   const { toast } = useToast();
 
-  // Carrega dados iniciais
-  useEffect(() => {
-    loadUsuarios();
-    loadLojas();
-    loadSetores();
-  }, [loadUsuarios]);
-
   const loadUsuarios = useCallback(async () => {
     try {
       setLoading(true);
@@ -98,6 +91,13 @@ export default function Usuarios() {
       setLoading(false);
     }
   }, [toast]);
+
+  // Carrega dados iniciais
+  useEffect(() => {
+    loadUsuarios();
+    loadLojas();
+    loadSetores();
+  }, [loadUsuarios]);
 
   const loadLojas = async () => {
     try {
