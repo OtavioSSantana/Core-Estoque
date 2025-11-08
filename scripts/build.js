@@ -4,21 +4,44 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
+// Detectar se estamos em um ambiente de CI/CD
+const isCI = !!(
+  process.env.CI ||
+  process.env.VERCEL ||
+  process.env.GITHUB_ACTIONS ||
+  process.env.GITLAB_CI ||
+  process.env.CIRCLECI ||
+  process.env.TRAVIS ||
+  process.env.JENKINS_URL
+);
+
+// Detectar se estamos no Windows (onde os erros de permissão ocorrem)
+const isWindows = process.platform === 'win32';
+
+// Só usar o patch no Windows e em ambiente local (não CI/CD)
+const shouldUsePatch = isWindows && !isCI;
+
 // Executar o build do Next.js com tratamento de erros
 console.log('Iniciando build do Next.js...');
-const patchPath = path.resolve(__dirname, 'patch-fs.js');
-const nodeOptions = process.env.NODE_OPTIONS || '';
+
+const env = {
+  ...process.env,
+  NEXT_TELEMETRY_DISABLED: '1'
+};
+
+// Aplicar patch apenas se necessário
+if (shouldUsePatch) {
+  const patchPath = path.resolve(__dirname, 'patch-fs.js');
+  const nodeOptions = process.env.NODE_OPTIONS || '';
+  env.NODE_OPTIONS = `${nodeOptions} -r ${patchPath}`.trim();
+  console.log('Patch de permissão do Windows ativado');
+}
+
 const nextBuild = spawn('next', ['build'], {
   stdio: ['inherit', 'pipe', 'pipe'],
   shell: true,
   cwd: path.resolve(__dirname, '..'),
-  env: {
-    ...process.env,
-    NEXT_TELEMETRY_DISABLED: '1',
-    // Carregar o patch antes que o Next.js seja executado
-    // Nota: Isso pode causar erro nos workers (código 9), mas o build principal funcionará
-    NODE_OPTIONS: `${nodeOptions} -r ${patchPath}`.trim()
-  }
+  env
 });
 
 let hasPermissionError = false;
@@ -49,11 +72,23 @@ nextBuild.stdout.on('data', (data) => {
 });
 
 nextBuild.on('close', (code) => {
-  // Verificar se o build compilou com sucesso mesmo com erro nos workers
+  // Verificar se o build compilou com sucesso
   const compiledSuccessfully = buildOutput.includes('Compiled successfully');
   
-  // Código 9 é erro dos workers (NODE_OPTIONS com -r), mas o build pode ter sido bem-sucedido
-  if (code === 9 && compiledSuccessfully) {
+  // Em CI/CD, não aceitar código 9 (erro dos workers) como sucesso
+  // pois isso pode causar problemas no deploy
+  if (isCI) {
+    if (code === 0) {
+      console.log('\nBuild concluído com sucesso!');
+      process.exit(0);
+    } else {
+      console.error(`\nBuild falhou com código ${code}`);
+      process.exit(code);
+    }
+  }
+  
+  // Em ambiente local (Windows), podemos ser mais flexíveis
+  if (code === 9 && compiledSuccessfully && shouldUsePatch) {
     console.log('\nBuild concluído com sucesso! (Aviso: alguns workers falharam devido a limitações do NODE_OPTIONS)');
     process.exit(0);
   } else if (code === 1 && hasPermissionError) {
