@@ -130,7 +130,37 @@ exports.Prisma.UsuariosScalarFieldEnum = {
   setor: 'setor',
   loja: 'loja',
   inativo: 'inativo',
-  email: 'email'
+  email: 'email',
+  id_vendedor_tiny: 'id_vendedor_tiny'
+};
+
+exports.Prisma.PedidosScalarFieldEnum = {
+  id: 'id',
+  codigo_tiny: 'codigo_tiny',
+  numero: 'numero',
+  data_pedido: 'data_pedido',
+  data_atualizacao: 'data_atualizacao',
+  status: 'status',
+  cliente_nome: 'cliente_nome',
+  valor_total: 'valor_total',
+  id_vendedor: 'id_vendedor',
+  nome_vendedor: 'nome_vendedor',
+  situacao: 'situacao',
+  loja_id: 'loja_id',
+  sincronizado_em: 'sincronizado_em',
+  estoque_baixado: 'estoque_baixado',
+  estoque_baixado_em: 'estoque_baixado_em'
+};
+
+exports.Prisma.Itens_pedidoScalarFieldEnum = {
+  id: 'id',
+  pedido_id: 'pedido_id',
+  produto_id: 'produto_id',
+  codigo_produto_tiny: 'codigo_produto_tiny',
+  descricao: 'descricao',
+  quantidade: 'quantidade',
+  valor_unitario: 'valor_unitario',
+  valor_total: 'valor_total'
 };
 
 exports.Prisma.SortOrder = {
@@ -154,7 +184,9 @@ exports.Prisma.ModelName = {
   produtos: 'produtos',
   setor: 'setor',
   estoque_loja: 'estoque_loja',
-  usuarios: 'usuarios'
+  usuarios: 'usuarios',
+  pedidos: 'pedidos',
+  itens_pedido: 'itens_pedido'
 };
 /**
  * Create the Client
@@ -199,7 +231,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -208,13 +239,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"windows\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel lojas {\n  id               Int            @id @default(autoincrement())\n  nome             String?        @db.VarChar(80)\n  endereco         String?\n  gerente          Int?\n  qtd_total_prod   Int?\n  estoque_por_loja estoque_loja[]\n}\n\nmodel produtos {\n  id               Int            @id @default(autoincrement())\n  codigo           String         @unique @db.VarChar(60)\n  descricao        String?\n  fornecedor       String?        @db.VarChar(80)\n  preco_venda      Decimal        @db.Decimal(18, 2)\n  estoque_por_loja estoque_loja[]\n}\n\nmodel setor {\n  id        Int     @id @default(autoincrement())\n  descricao String? @db.VarChar(60)\n}\n\nmodel estoque_loja {\n  id                    Int @id @default(autoincrement())\n  produto_id            Int\n  loja_id               Int\n  quantidade_estoque    Int @default(0)\n  quantidade_mostruario Int @default(0)\n  quantidade_disponivel Int @default(0)\n\n  produto  produtos @relation(fields: [produto_id], references: [id])\n  loja_ref lojas    @relation(fields: [loja_id], references: [id])\n\n  @@unique([produto_id, loja_id])\n}\n\nmodel usuarios {\n  id      Int      @id @default(autoincrement())\n  nome    String?  @db.VarChar(50)\n  login   String?  @db.VarChar(40)\n  senha   Int?\n  setor   Int?\n  loja    Int?\n  inativo Boolean? @default(false)\n  email   String?\n}\n",
-  "inlineSchemaHash": "1ca2cf7f185d873116c87078804b02586ce5a305d46792495bebeb457db602ef",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"windows\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel lojas {\n  id               Int            @id @default(autoincrement())\n  nome             String?        @db.VarChar(80)\n  endereco         String?\n  gerente          Int?\n  qtd_total_prod   Int?\n  estoque_por_loja estoque_loja[]\n  pedidos          pedidos[]\n}\n\nmodel produtos {\n  id               Int            @id @default(autoincrement())\n  codigo           String         @unique @db.VarChar(60)\n  descricao        String?\n  fornecedor       String?        @db.VarChar(80)\n  preco_venda      Decimal        @db.Decimal(18, 2)\n  estoque_por_loja estoque_loja[]\n  itens_pedido     itens_pedido[]\n}\n\nmodel setor {\n  id        Int     @id @default(autoincrement())\n  descricao String? @db.VarChar(60)\n}\n\nmodel estoque_loja {\n  id                    Int @id @default(autoincrement())\n  produto_id            Int\n  loja_id               Int\n  quantidade_estoque    Int @default(0)\n  quantidade_mostruario Int @default(0)\n  quantidade_disponivel Int @default(0)\n\n  produto  produtos @relation(fields: [produto_id], references: [id])\n  loja_ref lojas    @relation(fields: [loja_id], references: [id])\n\n  @@unique([produto_id, loja_id])\n}\n\nmodel usuarios {\n  id               Int      @id @default(autoincrement())\n  nome             String?  @db.VarChar(50)\n  login            String?  @db.VarChar(40)\n  senha            Int?\n  setor            Int?\n  loja             Int?\n  inativo          Boolean? @default(false)\n  email            String?\n  id_vendedor_tiny String?  @unique @db.VarChar(50)\n}\n\nmodel pedidos {\n  id                 Int            @id @default(autoincrement())\n  codigo_tiny        String?        @unique @db.VarChar(100)\n  numero             String?        @db.VarChar(50)\n  data_pedido        DateTime?\n  data_atualizacao   DateTime       @updatedAt\n  status             String?        @db.VarChar(50)\n  cliente_nome       String?        @db.VarChar(200)\n  valor_total        Decimal?       @db.Decimal(18, 2)\n  id_vendedor        String?        @db.VarChar(50)\n  nome_vendedor      String?        @db.VarChar(200)\n  situacao           String?        @db.VarChar(100)\n  loja_id            Int?\n  sincronizado_em    DateTime?\n  estoque_baixado    Boolean        @default(false)\n  estoque_baixado_em DateTime?\n  itens              itens_pedido[]\n  loja_ref           lojas?         @relation(fields: [loja_id], references: [id])\n\n  @@index([codigo_tiny])\n  @@index([status])\n  @@index([data_pedido])\n  @@index([situacao])\n  @@index([estoque_baixado])\n}\n\nmodel itens_pedido {\n  id                  Int       @id @default(autoincrement())\n  pedido_id           Int\n  produto_id          Int?\n  codigo_produto_tiny String?   @db.VarChar(100)\n  descricao           String?   @db.VarChar(500)\n  quantidade          Decimal   @db.Decimal(18, 2)\n  valor_unitario      Decimal   @db.Decimal(18, 2)\n  valor_total         Decimal   @db.Decimal(18, 2)\n  pedido              pedidos   @relation(fields: [pedido_id], references: [id], onDelete: Cascade)\n  produto             produtos? @relation(fields: [produto_id], references: [id])\n\n  @@index([pedido_id])\n  @@index([produto_id])\n  @@index([codigo_produto_tiny])\n}\n",
+  "inlineSchemaHash": "191bb5f0e37d0643eae1bf283d11bf30d1228b7cc12ae304ad555aa077ccba92",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"lojas\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"endereco\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"gerente\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"qtd_total_prod\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"estoque_por_loja\",\"kind\":\"object\",\"type\":\"estoque_loja\",\"relationName\":\"estoque_lojaTolojas\"}],\"dbName\":null},\"produtos\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"codigo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"descricao\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fornecedor\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"preco_venda\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"estoque_por_loja\",\"kind\":\"object\",\"type\":\"estoque_loja\",\"relationName\":\"estoque_lojaToprodutos\"}],\"dbName\":null},\"setor\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"descricao\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"estoque_loja\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"produto_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"loja_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantidade_estoque\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantidade_mostruario\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantidade_disponivel\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"produto\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"estoque_lojaToprodutos\"},{\"name\":\"loja_ref\",\"kind\":\"object\",\"type\":\"lojas\",\"relationName\":\"estoque_lojaTolojas\"}],\"dbName\":null},\"usuarios\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"login\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"senha\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"setor\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"loja\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"inativo\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"lojas\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"endereco\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"gerente\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"qtd_total_prod\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"estoque_por_loja\",\"kind\":\"object\",\"type\":\"estoque_loja\",\"relationName\":\"estoque_lojaTolojas\"},{\"name\":\"pedidos\",\"kind\":\"object\",\"type\":\"pedidos\",\"relationName\":\"lojasTopedidos\"}],\"dbName\":null},\"produtos\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"codigo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"descricao\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fornecedor\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"preco_venda\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"estoque_por_loja\",\"kind\":\"object\",\"type\":\"estoque_loja\",\"relationName\":\"estoque_lojaToprodutos\"},{\"name\":\"itens_pedido\",\"kind\":\"object\",\"type\":\"itens_pedido\",\"relationName\":\"itens_pedidoToprodutos\"}],\"dbName\":null},\"setor\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"descricao\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"estoque_loja\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"produto_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"loja_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantidade_estoque\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantidade_mostruario\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantidade_disponivel\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"produto\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"estoque_lojaToprodutos\"},{\"name\":\"loja_ref\",\"kind\":\"object\",\"type\":\"lojas\",\"relationName\":\"estoque_lojaTolojas\"}],\"dbName\":null},\"usuarios\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"login\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"senha\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"setor\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"loja\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"inativo\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"id_vendedor_tiny\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"pedidos\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"codigo_tiny\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"numero\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"data_pedido\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"data_atualizacao\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cliente_nome\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"valor_total\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"id_vendedor\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nome_vendedor\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"situacao\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"loja_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sincronizado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"estoque_baixado\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"estoque_baixado_em\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"itens\",\"kind\":\"object\",\"type\":\"itens_pedido\",\"relationName\":\"itens_pedidoTopedidos\"},{\"name\":\"loja_ref\",\"kind\":\"object\",\"type\":\"lojas\",\"relationName\":\"lojasTopedidos\"}],\"dbName\":null},\"itens_pedido\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"pedido_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"produto_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"codigo_produto_tiny\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"descricao\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantidade\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"valor_unitario\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"valor_total\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"pedido\",\"kind\":\"object\",\"type\":\"pedidos\",\"relationName\":\"itens_pedidoTopedidos\"},{\"name\":\"produto\",\"kind\":\"object\",\"type\":\"produtos\",\"relationName\":\"itens_pedidoToprodutos\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

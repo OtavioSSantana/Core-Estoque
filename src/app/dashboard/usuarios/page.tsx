@@ -35,6 +35,7 @@ interface Usuario {
   setor_descricao?: string;
   loja?: number;
   loja_nome?: string;
+  id_vendedor_tiny?: string;
   inativo: boolean;
 }
 
@@ -63,6 +64,7 @@ export default function Usuarios() {
     email: '',
     setor: '',
     loja: '',
+    id_vendedor_tiny: '',
   });
   const { toast } = useToast();
 
@@ -140,6 +142,7 @@ export default function Usuarios() {
           email: formData.email || null,
           setor: formData.setor ? parseInt(formData.setor) : null,
           loja: formData.loja ? parseInt(formData.loja) : null,
+          id_vendedor_tiny: formData.id_vendedor_tiny || null,
         }),
       });
 
@@ -185,6 +188,7 @@ export default function Usuarios() {
           email: formData.email || null,
           setor: formData.setor ? parseInt(formData.setor) : null,
           loja: formData.loja ? parseInt(formData.loja) : null,
+          id_vendedor_tiny: formData.id_vendedor_tiny || null,
         }),
       });
 
@@ -287,6 +291,7 @@ export default function Usuarios() {
       email: usuario.email || '',
       setor: usuario.setor?.toString() || '',
       loja: usuario.loja?.toString() || '',
+      id_vendedor_tiny: usuario.id_vendedor_tiny || '',
     });
     setIsEditDialogOpen(true);
   };
@@ -299,6 +304,7 @@ export default function Usuarios() {
       email: '',
       setor: '',
       loja: '',
+      id_vendedor_tiny: '',
     });
   };
 
@@ -407,6 +413,18 @@ export default function Usuarios() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="id_vendedor_tiny">ID Vendedor Tiny</Label>
+                  <Input 
+                    id="id_vendedor_tiny" 
+                    placeholder="Ex: 737264138" 
+                    value={formData.id_vendedor_tiny}
+                    onChange={(e) => setFormData({...formData, id_vendedor_tiny: e.target.value})}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    ID do vendedor no sistema Tiny (Olist)
+                  </p>
                 </div>
               </div>
               <div className="flex justify-end gap-3">
@@ -602,6 +620,18 @@ export default function Usuarios() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-id_vendedor_tiny">ID Vendedor Tiny</Label>
+              <Input 
+                id="edit-id_vendedor_tiny" 
+                placeholder="Ex: 737264138" 
+                value={formData.id_vendedor_tiny}
+                onChange={(e) => setFormData({...formData, id_vendedor_tiny: e.target.value})}
+              />
+              <p className="text-xs text-muted-foreground">
+                ID do vendedor no sistema Tiny (Olist)
+              </p>
             </div>
           </div>
           <div className="flex justify-end gap-3">

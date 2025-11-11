@@ -33,6 +33,7 @@ export async function getUsuarios() {
       setor_descricao: usuario.setor ? setoresMap.get(usuario.setor) || null : null,
       loja: usuario.loja,
       loja_nome: usuario.loja ? lojasMap.get(usuario.loja) || null : null,
+      id_vendedor_tiny: usuario.id_vendedor_tiny,
       inativo: usuario.inativo,
     }));
 
@@ -88,6 +89,7 @@ export async function getUsuarioById(id: number) {
       setor_descricao: setorDescricao,
       loja: usuario.loja,
       loja_nome: lojaNome,
+      id_vendedor_tiny: usuario.id_vendedor_tiny,
       inativo: usuario.inativo,
     };
 
@@ -131,6 +133,7 @@ export async function getUsuariosByLogin(login: string) {
       setor_descricao: null,
       loja: usuario.loja,
       loja_nome: null, // Será preenchido separadamente se necessário
+      id_vendedor_tiny: usuario.id_vendedor_tiny,
       inativo: usuario.inativo,
     }));
 

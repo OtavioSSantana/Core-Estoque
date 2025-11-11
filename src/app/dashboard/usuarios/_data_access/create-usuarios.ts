@@ -13,6 +13,7 @@ export interface CreateUsuarioData {
   setor?: number;
   loja?: number;
   email?: string;
+  id_vendedor_tiny?: string;
 }
 
 /**
@@ -123,6 +124,7 @@ export async function createUsuario(data: CreateUsuarioData) {
         setor: setorId,
         loja: lojaId,
         email: data.email?.trim() || null,
+        id_vendedor_tiny: data.id_vendedor_tiny?.trim() || null,
         inativo: false,
       },
     });
@@ -137,6 +139,7 @@ export async function createUsuario(data: CreateUsuarioData) {
       setor_descricao: null,
       loja: novoUsuario.loja,
       loja_nome: null,
+      id_vendedor_tiny: novoUsuario.id_vendedor_tiny,
       inativo: novoUsuario.inativo,
     };
 

@@ -158,7 +158,37 @@ exports.Prisma.UsuariosScalarFieldEnum = {
   setor: 'setor',
   loja: 'loja',
   inativo: 'inativo',
-  email: 'email'
+  email: 'email',
+  id_vendedor_tiny: 'id_vendedor_tiny'
+};
+
+exports.Prisma.PedidosScalarFieldEnum = {
+  id: 'id',
+  codigo_tiny: 'codigo_tiny',
+  numero: 'numero',
+  data_pedido: 'data_pedido',
+  data_atualizacao: 'data_atualizacao',
+  status: 'status',
+  cliente_nome: 'cliente_nome',
+  valor_total: 'valor_total',
+  id_vendedor: 'id_vendedor',
+  nome_vendedor: 'nome_vendedor',
+  situacao: 'situacao',
+  loja_id: 'loja_id',
+  sincronizado_em: 'sincronizado_em',
+  estoque_baixado: 'estoque_baixado',
+  estoque_baixado_em: 'estoque_baixado_em'
+};
+
+exports.Prisma.Itens_pedidoScalarFieldEnum = {
+  id: 'id',
+  pedido_id: 'pedido_id',
+  produto_id: 'produto_id',
+  codigo_produto_tiny: 'codigo_produto_tiny',
+  descricao: 'descricao',
+  quantidade: 'quantidade',
+  valor_unitario: 'valor_unitario',
+  valor_total: 'valor_total'
 };
 
 exports.Prisma.SortOrder = {
@@ -182,7 +212,9 @@ exports.Prisma.ModelName = {
   produtos: 'produtos',
   setor: 'setor',
   estoque_loja: 'estoque_loja',
-  usuarios: 'usuarios'
+  usuarios: 'usuarios',
+  pedidos: 'pedidos',
+  itens_pedido: 'itens_pedido'
 };
 
 /**

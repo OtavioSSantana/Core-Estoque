@@ -13,6 +13,7 @@ export interface UpdateUsuarioData {
   setor?: number;
   loja?: number;
   email?: string;
+  id_vendedor_tiny?: string;
   inativo?: boolean;
 }
 
@@ -94,6 +95,7 @@ export async function updateUsuario(id: number, data: UpdateUsuarioData) {
       setor: number;
       loja: number;
       email: string | null;
+      id_vendedor_tiny: string | null;
       inativo: boolean;
     }> = {};
 
@@ -121,6 +123,10 @@ export async function updateUsuario(id: number, data: UpdateUsuarioData) {
       dadosAtualizacao.email = data.email?.trim() || null;
     }
 
+    if (data.id_vendedor_tiny !== undefined) {
+      dadosAtualizacao.id_vendedor_tiny = data.id_vendedor_tiny?.trim() || null;
+    }
+
     if (data.inativo !== undefined) {
       dadosAtualizacao.inativo = data.inativo;
     }
@@ -141,6 +147,7 @@ export async function updateUsuario(id: number, data: UpdateUsuarioData) {
       setor_descricao: null, // Será preenchido separadamente se necessário
       loja: usuarioAtualizado.loja,
       loja_nome: null, // Será preenchido separadamente se necessário
+      id_vendedor_tiny: usuarioAtualizado.id_vendedor_tiny,
       inativo: usuarioAtualizado.inativo,
     };
 
